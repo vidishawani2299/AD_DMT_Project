@@ -6,7 +6,10 @@ SIM_TIME_STEPS = 20    # length of simulation (half years)
 # check cycle length
 ALPHA = 0.05        # significance level for calculating confidence intervals
 DISCOUNT = 0.03     # annual discount rate
+RR_DMT = 0.30
 
+ANNUAL_STATE_COST = []
+ANNUAL_STATE_UTILITY = []
 
 class HealthStates(Enum):
     """ health states of patients with HIV """
