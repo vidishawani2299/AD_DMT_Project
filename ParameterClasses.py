@@ -30,12 +30,12 @@ class Parameters:
         # calculate transition probabilities between hiv states
         if self.therapy == Therapies.SOC:
             # calculate transition probability matrix for the mono therapy
-            self.probMatrix = data.get_trans_prob_matrix(trans_matrix=data.trans_matrix)
+            self.probMatrix = data.get_trans_prob_matrix(trans_matrix=data.TRANS_MATRIX)
 
         elif self.therapy == Therapies.DMT_30:
             # calculate transition probability matrix for the combination therapy
             self.probMatrix = data.get_trans_prob_matrix_dmt_30(
-                trans_prob_matrix_soc=data.get_trans_prob_matrix(trans_matrix=data.trans_matrix),
+                trans_prob_matrix_soc=data.get_trans_prob_matrix(trans_matrix=data.TRANS_MATRIX),
                 relative_risk_dmt=data.RR_DMT)
 
         # annual state costs and utilities
@@ -46,5 +46,5 @@ class Parameters:
         self.discountRate = data.DISCOUNT
     
 if __name__ == '__main__':
-    matrix_soc = get_trans_prob_matrix(data.trans_matrix)
+    matrix_soc = get_trans_prob_matrix(data.TRANS_MATRIX)
     matrix_antic = get_trans_prob_matrix_dmt_30(matrix_soc, data.RR_DMT)
