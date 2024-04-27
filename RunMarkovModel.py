@@ -48,7 +48,7 @@ multiCohort.simulate(D.SIM_TIME_STEPS)
 
 # print projected mean survival time (years)
 print('Projected mean survival time (years)',
-      multiCohort.multiCohortOutcomes.statMeanSurvivalTime.get_mean())
+      multiCohort.multiCohortOutcomes.statMeanSurvivalTime.get_mean()) # check what to use for confidence interval
 
 # print projection interval
 print('95% projection (prediction, percentile, or uncertainty) interval of average survival time (years)',
