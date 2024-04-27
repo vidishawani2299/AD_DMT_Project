@@ -46,5 +46,5 @@ class Parameters:
         self.discountRate = data.DISCOUNT
     
 if __name__ == '__main__':
-    matrix_soc = get_trans_prob_matrix(data.trans_matrix)
-    matrix_antic = get_trans_prob_matrix_dmt_30(matrix_soc, data.RR_DMT)
+    matrix_soc = data.get_trans_prob_matrix(data.trans_matrix)
+    matrix_dmt30 = data.get_trans_prob_matrix_dmt_30(matrix_soc, data.RR_DMT)
