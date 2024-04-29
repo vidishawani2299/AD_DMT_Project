@@ -1,5 +1,6 @@
 import deampy.plots.histogram as hist
 import deampy.plots.sample_paths as path
+import deampy.statistics as stat
 
 import InputData as D
 from MarkovClasses import Cohort, MultiCohort
@@ -32,9 +33,22 @@ hist.plot_histogram(
 # print the patient survival time
 print('Mean survival time (years):',
       myCohort.cohortOutcomes.meanSurvivalTime)
-# print mean time to AIDS
+
 print('Mean time until SEVERE State (years)',
       myCohort.cohortOutcomes.meanTimeToSEVERE)
+
+# confidence interval and means
+statSurvivalTime = stat.SummaryStat(name='Summary statistics for survival time',
+                                    data=myCohort.cohortOutcomes.survivalTimes)
+
+statTimeToSEVERE = stat.SummaryStat(name='Summary statistics for survival time',
+                                    data=myCohort.cohortOutcomes.timeToSEVERE)
+
+print("Expected average survival time:", statSurvivalTime.get_mean())
+print("95% confidence interval of average survival time:", statSurvivalTime.get_t_CI(alpha=0.05))
+
+print("Expected average time to severe state:", statTimeToSEVERE.get_mean())
+print("95% confidence interval of average time to severe state:", statTimeToSEVERE.get_t_CI(alpha=0.05))
 
 # create multiple cohorts
 multiCohort = MultiCohort(
@@ -60,3 +74,4 @@ print('Projected mean time to severe state (years)',
 # print projection interval
 print('95% projection (prediction, percentile, or uncertainty) interval of mean time to severe state (years)',
       multiCohort.multiCohortOutcomes.statMeanTimeToSEVERE.get_PI(alpha=D.ALPHA))
+
