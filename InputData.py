@@ -51,6 +51,7 @@ print(get_trans_prob_matrix(TRANS_MATRIX))
 
 
 def get_trans_prob_matrix_dmt_30(trans_prob_matrix_soc, relative_risk_dmt):
+    # make changes for the first row, subtract from 1 for getting row total = 1
     matrix_dmt = []
     for row in trans_prob_matrix_soc:
         matrix_dmt.append(np.zeros(len(row)))  # adding a row [0, 0, 0, 0]
