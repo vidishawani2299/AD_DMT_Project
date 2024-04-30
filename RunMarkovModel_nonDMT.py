@@ -1,14 +1,18 @@
 import deampy.plots.histogram as hist
 import deampy.plots.sample_paths as path
 import deampy.statistics as stat
+import ParameterClasses as param
 
 import InputData as D
 from MarkovClasses import Cohort, MultiCohort
 
+therapy = param.Therapies.SOC
+k = None
+
 # create a cohort
 myCohort = Cohort(id=1,
                   pop_size=D.POP_SIZE,
-                  transition_prob_matrix=D.get_trans_prob_matrix(D.TRANS_MATRIX))
+                  parameters=param.Parameters(therapy=therapy, k=k))
 
 # simulate the cohort over the specified time steps
 myCohort.simulate(n_time_steps=D.SIM_TIME_STEPS)
@@ -54,7 +58,7 @@ print("95% confidence interval of average time to severe state:", statTimeToSEVE
 multiCohort = MultiCohort(
     ids=range(D.N_COHORTS),   # [0, 1, 2 ..., N_COHORTS-1]
     pop_sizes=[D.POP_SIZE]*D.N_COHORTS,
-    transition_prob_matrix=D.get_trans_prob_matrix(D.TRANS_MATRIX)# [COHORT_POP_SIZE, COHORT_POP_SIZE, ..., COHORT_POP_SIZE]
+    parameters=param.Parameters# [COHORT_POP_SIZE, COHORT_POP_SIZE, ..., COHORT_POP_SIZE]
 )
 
 # simulate all cohorts

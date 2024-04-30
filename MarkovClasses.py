@@ -2,19 +2,19 @@ import numpy as np
 from deampy.markov import MarkovJumpProcess
 from deampy.plots.sample_paths import PrevalencePathBatchUpdate
 import deampy.statistics as stats
+import deampy.econ_eval as econ
 
 from InputData import HealthStates
 
 
 class Patient:
-    def __init__(self, id, transition_prob_matrix):
+    def __init__(self, id, parameters):
         """ initiates a patient
         :param id: ID of the patient
-        :param transition_prob_matrix: transition probability matrix
         """
         self.id = id
-        self.transProbMatrix = transition_prob_matrix
-        self.stateMonitor = PatientStateMonitor()
+        self.params = parameters
+        self.stateMonitor = PatientStateMonitor(parameters=parameters)
 
     def simulate(self, n_time_steps):
         """ simulate the patient over the specified simulation length """
@@ -22,7 +22,7 @@ class Patient:
         # random number generator
         rng = np.random.RandomState(seed=self.id)
         # Markov jump process
-        markov_jump = MarkovJumpProcess(transition_prob_matrix=self.transProbMatrix)
+        markov_jump = MarkovJumpProcess(transition_prob_matrix=self.params.probMatrix)
 
         k = 0  # simulation time step
 
@@ -44,11 +44,12 @@ class Patient:
 
 class PatientStateMonitor:
     """ to update patient outcomes (years survived, cost, etc.) throughout the simulation """
-    def __init__(self):
+    def __init__(self, parameters):
 
-        self.currentState = HealthStates.PREDEM    # current health state
+        self.currentState = parameters.initialHealthState    # current health state
         self.survivalTime = None      # survival time
         self.timeToSEVERE = None        # time to reach severe state
+        self.costUtilityMonitor = PatientCostUtilityMonitor(parameters=parameters)
 
     def update(self, time_step, new_state):
         """
@@ -65,6 +66,11 @@ class PatientStateMonitor:
         if self.timeToSEVERE is None and new_state == HealthStates.SEVERE:
             self.timeToSEVERE = time_step + 0.5  # corrected for the half-cycle effect
 
+        # update cost and utility
+        self.costUtilityMonitor.update(k=time_step,
+                                       current_state=self.currentState,
+                                       next_state=new_state) # add information for this from costUtilityMonitor
+
         # update current health state
         self.currentState = new_state
 
@@ -76,16 +82,57 @@ class PatientStateMonitor:
             return False
 
 
+class PatientCostUtilityMonitor:
+    def __init__(self, parameters):
+
+        # model parameters for this patient
+        self.params = parameters
+
+        # total cost and utility
+        self.totalDiscountedCost = 0
+        self.totalDiscountedUtility = 0
+
+    def update(self, k, current_state, next_state):
+        """ updates the discounted total cost and health utility
+        :param k: simulation time step
+        :param current_state: current health state
+        :param next_state: next health state
+        """
+
+        # update cost
+        cost = 0.5 * (self.params.annualStateCosts[current_state.value] +
+                      self.params.annualStateCosts[next_state.value])
+        # update utility
+        utility = 0.5 * (self.params.annualStateUtilities[current_state.value] +
+                         self.params.annualStateUtilities[next_state.value])
+
+        # add the cost of treatment
+        # if HIV death will occur, add the cost for half-year of treatment
+        if next_state == HealthStates.SEVERE:
+            cost += 0.5 * self.params.annualTreatmentCost
+        else:
+            cost += 1 * self.params.annualTreatmentCost
+
+        # update total discounted cost and utility (corrected for the half-cycle effect)
+        self.totalDiscountedCost += econ.pv_single_payment(payment=cost,
+                                                           discount_rate=self.params.discountRate / 2,
+                                                           discount_period= k + 1)
+        self.totalDiscountedUtility += econ.pv_single_payment(payment=utility,
+                                                              discount_rate=self.params.discountRate / 2,
+                                                              discount_period= k + 1)
+
+
+
+
 class Cohort:
-    def __init__(self, id, pop_size, transition_prob_matrix):
+    def __init__(self, id, pop_size, parameters):
         """ create a cohort of patients
         :param id: cohort ID
         :param pop_size: population size of this cohort
-        :param transition_prob_matrix: transition probability matrix
         """
         self.id = id
         self.popSize = pop_size
-        self.transitionProbMatrix = transition_prob_matrix
+        self.params = parameters
         self.cohortOutcomes = CohortOutcomes()  # outcomes of this simulated cohort
 
     def simulate(self, n_time_steps):
@@ -96,7 +143,7 @@ class Cohort:
         for i in range(self.popSize):
             # create a new patient (use id * pop_size + n as patient id)
             patient = Patient(id=self.id * self.popSize + i,
-                              transition_prob_matrix=self.transitionProbMatrix)
+                              parameters=self.params)
             # simulate
             patient.simulate(n_time_steps)
 
@@ -111,10 +158,14 @@ class CohortOutcomes:
     def __init__(self):
 
         self.survivalTimes = []         # patients' survival times
-        self.timeToSEVERE = []           # patients' times to AIDS
-        self.meanSurvivalTime = None    # mean survival times
-        self.meanTimeToSEVERE = None      # mean time to AIDS
+        self.timeToSEVERE = []          # patients' times to AIDS
         self.nLivingPatients = None     # survival curve (sample path of number of alive patients over time)
+        self.costs = []                 # patients' discounted costs
+        self.utilities = []             # patients' discounted utilities
+        self.statSurvivalTimes = None   # summary statistics for survival time
+        self.statTimeToSEVERE = None    # summary statistics for discounted cost
+        self.statCost = None            # summary statistics for discounted cost
+        self.statUtilities = None       # summary statistics for discounted utility
 
     def extract_outcome(self, simulated_patient):
         """ extracts outcomes of a simulated patient
@@ -126,15 +177,21 @@ class CohortOutcomes:
         if simulated_patient.stateMonitor.timeToSEVERE is not None:
             self.timeToSEVERE.append(simulated_patient.stateMonitor.timeToSEVERE)
 
+        # discounted cost and utilities
+        self.costs.append(simulated_patient.stateMonitor.costUtilityMonitor.totalDiscountedCost)
+        self.utilities.append(simulated_patient.stateMonitor.costUtilityMonitor.totalDiscountedUtilities)
+
     def calculate_cohort_outcomes(self, initial_pop_size):
         """ calculates the cohort outcomes
         :param initial_pop_size: initial population size
         """
 
-        # calculate mean survival time
-        self.meanSurvivalTime = sum(self.survivalTimes) / len(self.survivalTimes)
-        # calculate mean time to AIDS
-        self.meanTimeToSEVERE = sum(self.timeToSEVERE) / len(self.timeToSEVERE)
+        # summary statistics
+        self.statSurvivalTimes = stats.SummaryStat(name="Survival Time", data=self.survivalTimes)
+        self.statTimeToSEVERE = stats.SummaryStat(name="Time To Severe State", data=self.timeToSEVERE)
+        self.statCost = stats.SummaryStat(name="Discounted Cost", data=self.costs)
+        self.statUtilities = stats.SummaryStat(name="Discounted Utilities", data=self.utilities)
+
 
         # survival curve
         self.nLivingPatients = PrevalencePathBatchUpdate(
@@ -147,7 +204,7 @@ class CohortOutcomes:
 class MultiCohort:
     """ simulates multiple cohorts with different parameters """
 
-    def __init__(self, ids, pop_sizes, transition_prob_matrix):
+    def __init__(self, ids, pop_sizes, parameters):
         """
         :param ids: (list) of ids for cohorts to simulate
         :param pop_sizes: (list) of population sizes of cohorts to simulate
@@ -155,8 +212,8 @@ class MultiCohort:
         """
         self.ids = ids
         self.popSizes = pop_sizes
-        self.transitionProbMatrix = transition_prob_matrix
-        self.multiCohortOutcomes = MultiCohortOutcomes()
+        self.params = parameters
+        self.multiCohortOutcomes = MultiCohortOutcomes(parameters=parameters)
 
     def simulate(self, n_time_steps):
         """ simulates all cohorts """
@@ -164,7 +221,8 @@ class MultiCohort:
         for i in range(len(self.ids)):
 
             # create a cohort
-            cohort = Cohort(id=self.ids[i], pop_size=self.popSizes[i], transition_prob_matrix=self.transitionProbMatrix)
+            cohort = Cohort(id=self.ids[i], pop_size=self.popSizes[i],
+                            parameters=self.params)
 
             # simulate the cohort
             cohort.simulate(n_time_steps=n_time_steps)
@@ -177,7 +235,7 @@ class MultiCohort:
 
 
 class MultiCohortOutcomes:
-    def __init__(self):
+    def __init__(self, parameters):
 
         self.survivalTimes = []  # two-dimensional list of patient survival times from all simulated cohort
         self.meanSurvivalTimes = []  # list of average patient survival time for all simulated cohort
@@ -186,6 +244,7 @@ class MultiCohortOutcomes:
         self.timeToSEVERE = []
         self.meanTimeToSEVERE = []
         self.statMeanTimeToSEVERE = None
+        self.params = parameters
     def extract_outcomes(self, simulated_cohort):
         """ extracts outcomes of a simulated cohort
         :param simulated_cohort: a cohort after being simulated"""
