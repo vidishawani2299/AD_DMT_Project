@@ -20,9 +20,9 @@ class Parameters:
 
         # # annual treatment cost
         if self.therapy == Therapies.DMT_30:
-             self.annualTreatmentCost = data.DMT30_COST
+             self.annualTreatmentCost = data.DMT30_COST # cost matrix pending
         else:
-             self.annualTreatmentCost = data.SOC_COST
+             self.annualTreatmentCost = data.SOC_COST # cost matrix pending
 
         # transition probability matrix of the selected therapy
         self.probMatrix = []
