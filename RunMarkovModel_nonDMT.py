@@ -1,14 +1,12 @@
 import deampy.plots.histogram as hist
 import deampy.plots.sample_paths as path
-import deampy.statistics as stat
 import ParameterClasses as param
 
 import InputData as D
 from MarkovClasses import Cohort, MultiCohort
 
 therapy = param.Therapies.SOC
-k = None
-
+k = 0
 # create a cohort
 myCohort = Cohort(id=1,
                   pop_size=D.POP_SIZE,
@@ -16,6 +14,7 @@ myCohort = Cohort(id=1,
 
 # simulate the cohort over the specified time steps
 myCohort.simulate(n_time_steps=D.SIM_TIME_STEPS)
+myCohort.cohortOutcomes.print_costs()
 
 # plot the sample path (survival curve)
 path.plot_sample_path(
@@ -34,31 +33,21 @@ hist.plot_histogram(
     bin_width=1,
     file_name='figs/histogram.png')
 
-# print the patient survival time
-print('Mean survival time (years):',
-      myCohort.cohortOutcomes.meanSurvivalTime)
 
-print('Mean time until SEVERE State (years)',
-      myCohort.cohortOutcomes.meanTimeToSEVERE)
+print("Expected average survival time:", myCohort.cohortOutcomes.statSurvivalTimes.get_mean())
+print("95% confidence interval of average survival time:", myCohort.cohortOutcomes.statSurvivalTimes.get_t_CI(alpha=0.05))
 
-# confidence interval and means
-statSurvivalTime = stat.SummaryStat(name='Summary statistics for survival time',
-                                    data=myCohort.cohortOutcomes.survivalTimes)
+print("Expected average time to severe state:", myCohort.cohortOutcomes.statTimeToSEVERE.get_mean())
+print("95% confidence interval of average time to severe state:", myCohort.cohortOutcomes.statTimeToSEVERE.get_t_CI(alpha=0.05))
 
-statTimeToSEVERE = stat.SummaryStat(name='Summary statistics for survival time',
-                                    data=myCohort.cohortOutcomes.timeToSEVERE)
-
-print("Expected average survival time:", statSurvivalTime.get_mean())
-print("95% confidence interval of average survival time:", statSurvivalTime.get_t_CI(alpha=0.05))
-
-print("Expected average time to severe state:", statTimeToSEVERE.get_mean())
-print("95% confidence interval of average time to severe state:", statTimeToSEVERE.get_t_CI(alpha=0.05))
+print("Expected Cost:", myCohort.cohortOutcomes.statCost.get_mean())
+print("Expected Disutility:", myCohort.cohortOutcomes.statUtilities.get_mean())
 
 # create multiple cohorts
 multiCohort = MultiCohort(
     ids=range(D.N_COHORTS),   # [0, 1, 2 ..., N_COHORTS-1]
     pop_sizes=[D.POP_SIZE]*D.N_COHORTS,
-    parameters=param.Parameters# [COHORT_POP_SIZE, COHORT_POP_SIZE, ..., COHORT_POP_SIZE]
+    parameters=param.Parameters(therapy=therapy, k=k)# [COHORT_POP_SIZE, COHORT_POP_SIZE, ..., COHORT_POP_SIZE]
 )
 
 # simulate all cohorts

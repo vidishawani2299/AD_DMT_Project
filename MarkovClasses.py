@@ -7,6 +7,7 @@ import deampy.econ_eval as econ
 from InputData import HealthStates
 
 
+
 class Patient:
     def __init__(self, id, parameters):
         """ initiates a patient
@@ -43,84 +44,142 @@ class Patient:
 
 
 class PatientStateMonitor:
-    """ to update patient outcomes (years survived, cost, etc.) throughout the simulation """
-    def __init__(self, parameters):
+    """ To update patient outcomes (years survived, cost, etc.) throughout the simulation. """
 
-        self.currentState = parameters.initialHealthState    # current health state
-        self.survivalTime = None      # survival time
-        self.timeToSEVERE = None        # time to reach severe state
+    def __init__(self, parameters):
+        self.currentState = parameters.initialHealthState
+        self.survivalTime = None
+        self.timeToSEVERE = None
         self.costUtilityMonitor = PatientCostUtilityMonitor(parameters=parameters)
 
     def update(self, time_step, new_state):
-        """
-        update the current health state to the new health state
-        :param time_step: current time step
-        :param new_state: new state
-        """
-
-        # update survival time
         if new_state == HealthStates.ADJ_DEATH:
-            self.survivalTime = time_step + 0.5  # corrected for the half-cycle effect
-
-        # update time until AIDS (only if the patient has never developed AIDS before)
+            self.survivalTime = time_step + 0.5  # Correct for half-cycle effect.
         if self.timeToSEVERE is None and new_state == HealthStates.SEVERE:
-            self.timeToSEVERE = time_step + 0.5  # corrected for the half-cycle effect
+            self.timeToSEVERE = time_step + 0.5
 
-        # update cost and utility
-        self.costUtilityMonitor.update(k=time_step,
-                                       current_state=self.currentState,
-                                       next_state=new_state) # add information for this from costUtilityMonitor
-
-        # update current health state
+        self.costUtilityMonitor.update(k=time_step, current_state=self.currentState, next_state=new_state)
         self.currentState = new_state
 
     def get_if_alive(self):
-        """ returns true if the patient is still alive """
-        if self.currentState != HealthStates.ADJ_DEATH:
-            return True
-        else:
-            return False
+        return self.currentState != HealthStates.ADJ_DEATH
 
 
 class PatientCostUtilityMonitor:
     def __init__(self, parameters):
-
-        # model parameters for this patient
         self.params = parameters
-
-        # total cost and utility
         self.totalDiscountedCost = 0
         self.totalDiscountedUtility = 0
 
     def update(self, k, current_state, next_state):
-        """ updates the discounted total cost and health utility
-        :param k: simulation time step
-        :param current_state: current health state
-        :param next_state: next health state
-        """
+        # Update cost, calculating half-cycle for transitions
+        cost = 0.5 * (self.params.semiAnnualStateCosts[current_state.value] +
+                      self.params.semiAnnualStateCosts[next_state.value])
 
-        # update cost
-        cost = 0.5 * (self.params.annualStateCosts[current_state.value] +
-                      self.params.annualStateCosts[next_state.value])
-        # update utility
-        utility = 0.5 * (self.params.annualStateUtilities[current_state.value] +
-                         self.params.annualStateUtilities[next_state.value])
+        # Calculate utility if the state is associated with a utility
+        utility = 0
+        if current_state != HealthStates.ADJ_DEATH and next_state != HealthStates.ADJ_DEATH:
+            utility = 0.5 * (self.params.stateUtilities[current_state.value] +
+                             self.params.stateUtilities[next_state.value])
 
-        # add the cost of treatment
-        # if HIV death will occur, add the cost for half-year of treatment
+        # Treatment cost adjustments based on state
         if next_state == HealthStates.SEVERE:
-            cost += 0.5 * self.params.annualTreatmentCost
+            cost += 0.5 * self.params.annualTreatmentCost # Only half cycle treatment cost if next state is SEVERE
         else:
-            cost += 1 * self.params.annualTreatmentCost
+            cost += self.params.annualTreatmentCost
 
-        # update total discounted cost and utility (corrected for the half-cycle effect)
-        self.totalDiscountedCost += econ.pv_single_payment(payment=cost,
-                                                           discount_rate=self.params.discountRate / 2,
-                                                           discount_period= k + 1)
-        self.totalDiscountedUtility += econ.pv_single_payment(payment=utility,
-                                                              discount_rate=self.params.discountRate / 2,
-                                                              discount_period= k + 1)
+        # Apply discounting
+        discounted_cost = econ.pv_single_payment(payment=cost, discount_rate=self.params.discountRate / 2,
+                                                 discount_period=k + 1)
+        discounted_utility = econ.pv_single_payment(payment=utility, discount_rate=self.params.discountRate / 2,
+                                                    discount_period=k + 1)
 
+        # Update total discounted cost and utility
+        self.totalDiscountedCost += discounted_cost
+        self.totalDiscountedUtility += discounted_utility
+
+
+# class PatientStateMonitor:
+#     """ to update patient outcomes (years survived, cost, etc.) throughout the simulation """
+#     def __init__(self, parameters):
+#
+#         self.currentState = parameters.initialHealthState    # current health state
+#         self.survivalTime = None      # survival time
+#         self.timeToSEVERE = None        # time to reach severe state
+#         self.costUtilityMonitor = PatientCostUtilityMonitor(parameters=parameters)
+#
+#     def update(self, time_step, new_state):
+#         """
+#         update the current health state to the new health state
+#         :param time_step: current time step
+#         :param new_state: new state
+#         """
+#
+#         # update survival time
+#         if new_state == HealthStates.ADJ_DEATH:
+#             self.survivalTime = time_step + 0.5  # corrected for the half-cycle effect
+#
+#         # update time until AIDS (only if the patient has never developed AIDS before)
+#         if self.timeToSEVERE is None and new_state == HealthStates.SEVERE:
+#             self.timeToSEVERE = time_step + 0.5  # corrected for the half-cycle effect
+#
+#         # update cost and utility
+#         self.costUtilityMonitor.update(k=time_step,
+#                                        current_state=self.currentState,
+#                                        next_state=new_state) # add information for this from costUtilityMonitor
+#
+#         # update current health state
+#         self.currentState = new_state
+#
+#     def get_if_alive(self):
+#         """ returns true if the patient is still alive """
+#         if self.currentState != HealthStates.ADJ_DEATH:
+#             return True
+#         else:
+#             return False
+#
+#
+# class PatientCostUtilityMonitor:
+#     def __init__(self, parameters):
+#
+#         # model parameters for this patient
+#         self.params = parameters
+#
+#         # total cost and utility
+#         self.totalDiscountedCost = 0
+#         self.totalDiscountedUtility = 0
+#
+#     def update(self, k, current_state, next_state):
+#         """ updates the discounted total cost and health utility
+#         :param k: simulation time step
+#         :param current_state: current health state
+#         :param next_state: next health state
+#         """
+#
+#         # update cost
+#         cost = 0.5 * (self.params.semiAnnualStateCosts[current_state.value] +
+#                       self.params.semiAnnualStateCosts[next_state.value])
+#         # update utility
+#         utility = 0.5 * (self.params.stateUtilities[current_state.value] +
+#                          self.params.stateUtilities[next_state.value])
+#
+#         # add the cost of treatment
+#         # if HIV death will occur, add the cost for half-year of treatment
+#         if next_state == HealthStates.SEVERE:
+#             cost += 0.5 * self.params.annualTreatmentCost
+#         else:
+#             cost += 1 * self.params.annualTreatmentCost
+#
+#         # update total discounted cost and utility (corrected for the half-cycle effect)
+#         self.totalDiscountedCost += econ.pv_single_payment(payment=cost,
+#                                                            discount_rate=self.params.discountRate / 2,
+#                                                            discount_period= k + 1)
+#         self.totalDiscountedUtility += econ.pv_single_payment(payment=utility,
+#                                                               discount_rate=self.params.discountRate / 2,
+#                                                               discount_period= k + 1)
+#
+#         print("Attempting to access index:", next_state.value)
+#         print("State Utilities Length:", len(self.params.stateUtilities))
 
 
 
@@ -179,7 +238,7 @@ class CohortOutcomes:
 
         # discounted cost and utilities
         self.costs.append(simulated_patient.stateMonitor.costUtilityMonitor.totalDiscountedCost)
-        self.utilities.append(simulated_patient.stateMonitor.costUtilityMonitor.totalDiscountedUtilities)
+        self.utilities.append(simulated_patient.stateMonitor.costUtilityMonitor.totalDiscountedUtility)
 
     def calculate_cohort_outcomes(self, initial_pop_size):
         """ calculates the cohort outcomes
@@ -200,6 +259,11 @@ class CohortOutcomes:
             times_of_changes=self.survivalTimes,
             increments=[-1]*len(self.survivalTimes)
         )
+
+    def print_costs(self):
+        print("Costs for each patient in this cohort:")
+        for i, cost in enumerate(self.costs):
+            print(f"Patient {i + 1}: ${cost:.2f}")
 
 class MultiCohort:
     """ simulates multiple cohorts with different parameters """
@@ -323,4 +387,3 @@ class MultiCohortOutcomes:
             'survival_pi': survival_pi,
             'severe_pi': severe_pi
         }
-

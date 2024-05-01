@@ -15,13 +15,14 @@ SEMI_ANNUAL_STATE_COST = [5775.4, # PREDEM
                      0] # ADJ_DEATH
 
 STATE_DISUTILITY = [-0.17,
-                           -0.22,
-                           -0.36,
-                           -0.53]
+                    -0.22,
+                    -0.36,
+                    -0.66,
+                    0]
 
-DMT30_COST_year1 = 47488
-DMT30_COST_year2onwards = 59360
-SOC_COST = 30000 # change based on literature
+DMT30_COST_year1 = 47488/2
+DMT30_COST_year2onwards = 59360/2
+SOC_COST = 2040/2
 
 class HealthStates(Enum):
     """ health states of patients with HIV """
