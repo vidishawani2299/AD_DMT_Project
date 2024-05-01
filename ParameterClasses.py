@@ -7,21 +7,17 @@ class Therapies(Enum):
     DMT_30 = 1
 
 class Parameters:
-    def __init__(self, therapy, k):
+    def __init__(self, therapy):
 
         # selected therapy
         self.therapy = therapy
-        self.cycle = k
 
         # initial health state
         self.initialHealthState = data.HealthStates.PREDEM
 
         # annual treatment cost
         if self.therapy == Therapies.DMT_30:
-            if self.cycle <= 2:
-                self.annualTreatmentCost = data.DMT30_COST_year1
-            else:
-                self.annualTreatmentCost = data.DMT30_COST_year2onwards
+            self.annualTreatmentCost = data.DMT30_COST
         else:
              self.annualTreatmentCost = data.SOC_COST # find SOC cost
 

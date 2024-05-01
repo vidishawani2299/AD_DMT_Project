@@ -94,7 +94,7 @@ def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
     increase_survival_time = stat.DifferenceStatIndp(
         name='Increase in mean survival time',
         x=sim_outcomes_dmt.survivalTimes,
-        y_ref=sim_outcomes_.survivalTimes)
+        y_ref=sim_outcomes_soc.survivalTimes)
 
     # estimate and CI
     estimate_CI = increase_survival_time.get_formatted_mean_and_interval(
@@ -105,8 +105,8 @@ def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
     # increase in mean discounted cost under combination therapy with respect to mono therapy
     increase_discounted_cost = stat.DifferenceStatIndp(
         name='Increase in mean discounted cost',
-        x=sim_outcomes_soc.costs,
-        y_ref=sim_outcomes_dmt.costs)
+        x=sim_outcomes_dmt.costs,
+        y_ref=sim_outcomes_soc.costs)
 
     # estimate and CI
     estimate_CI = increase_discounted_cost.get_formatted_mean_and_interval(
@@ -117,8 +117,8 @@ def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
     # increase in mean discounted utility under combination therapy with respect to mono therapy
     increase_discounted_utility = stat.DifferenceStatIndp(
         name='Increase in mean discounted utility',
-        x=sim_outcomes_soc.utilities,
-        y_ref=sim_outcomes_dmt.utilities)
+        x=sim_outcomes_dmt.utilities,
+        y_ref=sim_outcomes_soc.utilities)
 
     # estimate and CI
     estimate_CI = increase_discounted_utility.get_formatted_mean_and_interval(
@@ -137,12 +137,12 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
     soc_therapy_strategy = econ.Strategy(
         name='Standard of Care Therapy',
         cost_obs=sim_outcomes_soc.costs,
-        effect_obs=sim_outcomes_dmt.utilities,
+        effect_obs=sim_outcomes_soc.utilities,
         color='green'
     )
     dmt_therapy_strategy = econ.Strategy(
         name='Combination Therapy',
-        cost_obs=sim_outcomes_soc.costs,
+        cost_obs=sim_outcomes_dmt.costs,
         effect_obs=sim_outcomes_dmt.utilities,
         color='blue'
     )

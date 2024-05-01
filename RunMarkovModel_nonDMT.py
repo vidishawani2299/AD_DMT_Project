@@ -6,11 +6,10 @@ import InputData as D
 from MarkovClasses import Cohort, MultiCohort
 
 therapy = param.Therapies.SOC
-k = 0
 # create a cohort
 myCohort = Cohort(id=1,
                   pop_size=D.POP_SIZE,
-                  parameters=param.Parameters(therapy=therapy, k=k))
+                  parameters=param.Parameters(therapy=therapy))
 
 # simulate the cohort over the specified time steps
 myCohort.simulate(n_time_steps=D.SIM_TIME_STEPS)
@@ -47,7 +46,7 @@ print("Expected Disutility:", myCohort.cohortOutcomes.statUtilities.get_mean())
 multiCohort = MultiCohort(
     ids=range(D.N_COHORTS),   # [0, 1, 2 ..., N_COHORTS-1]
     pop_sizes=[D.POP_SIZE]*D.N_COHORTS,
-    parameters=param.Parameters(therapy=therapy, k=k)# [COHORT_POP_SIZE, COHORT_POP_SIZE, ..., COHORT_POP_SIZE]
+    parameters=param.Parameters(therapy=therapy)# [COHORT_POP_SIZE, COHORT_POP_SIZE, ..., COHORT_POP_SIZE]
 )
 
 # simulate all cohorts

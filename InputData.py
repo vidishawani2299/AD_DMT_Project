@@ -20,8 +20,8 @@ STATE_DISUTILITY = [-0.17,
                     -0.66,
                     0]
 
-DMT30_COST_year1 = 47488/2
-DMT30_COST_year2onwards = 59360/2
+DMT30_COST = 56000/2
+# DMT30_COST_year2onwards = 59360/2
 SOC_COST = 2040/2
 
 class HealthStates(Enum):

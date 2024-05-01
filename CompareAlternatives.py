@@ -4,12 +4,12 @@ import ParameterClasses as param
 import Support as support
 
 
-k = 0
+
 # simulating mono therapy
 # create a cohort
 cohort_SOC = model.Cohort(id=0,
                            pop_size=data.POP_SIZE,
-                           parameters=param.Parameters(therapy=param.Therapies.SOC, k=k ))
+                           parameters=param.Parameters(therapy=param.Therapies.SOC))
 # simulate the cohort
 cohort_SOC.simulate(n_time_steps=data.SIM_TIME_STEPS)
 
@@ -17,7 +17,7 @@ cohort_SOC.simulate(n_time_steps=data.SIM_TIME_STEPS)
 # create a cohort
 cohort_DMT30 = model.Cohort(id=1,
                             pop_size=data.POP_SIZE,
-                            parameters=param.Parameters(therapy=param.Therapies.DMT_30, k=k))
+                            parameters=param.Parameters(therapy=param.Therapies.DMT_30))
 # simulate the cohort
 cohort_DMT30.simulate(n_time_steps=data.SIM_TIME_STEPS)
 
