@@ -8,16 +8,16 @@ ALPHA = 0.05        # significance level for calculating confidence intervals
 DISCOUNT = 0.03     # annual discount rate
 RR_DMT = 0.30
 
-SEMI_ANNUAL_STATE_COST = [5775.4, # PREDEM
-                     6895.2, # MILD
-                     8530.2, # MODERATE
-                     8530.2, # SEVERE
+SEMI_ANNUAL_STATE_COST = [3875, # PREDEM
+                     3875, # MILD
+                     25000, # MODERATE
+                     25000, # SEVERE
                      0] # ADJ_DEATH
 
-STATE_DISUTILITY = [-0.17,
-                    -0.22,
-                    -0.36,
-                    -0.66,
+STATE_DISUTILITY = [0.83,
+                    0.78,
+                    0.69,
+                    0.27,
                     0]
 
 DMT30_COST = 56000/2
@@ -33,10 +33,10 @@ class HealthStates(Enum):
     ADJ_DEATH = 4
 
 TRANS_MATRIX = [
-    [70,  28,    0,   0,   2],   # CD4_200to500
-    [0,     61,    15,    0,    3],   # CD4_200
-    [0,     0,      62,    23,   8],
-    [0,     0,      0,    1,   21],
+    [70,  28,    0,   0,   3],   # CD4_200to500
+    [0,     62,    32,    2,    3],   # CD4_200
+    [0,     0,      62,    24,   8],
+    [0,     0,      0,    1,   22],
     [0,     0,      0,    0,   1]# AIDS
     ]
 
