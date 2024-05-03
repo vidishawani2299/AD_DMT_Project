@@ -42,8 +42,8 @@ def print_outcomes(sim_outcomes, therapy_name):
 
 def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
     """ draws the survival curves and the histograms of time until HIV deaths
-    :param sim_outcomes_mono: outcomes of a cohort simulated under mono therapy
-    :param sim_outcomes_combo: outcomes of a cohort simulated under combination therapy
+    :param sim_outcomes_soc: outcomes of a cohort simulated under mono therapy
+    :param sim_outcomes_dmt: outcomes of a cohort simulated under combination therapy
     """
 
     # get survival curves of both treatments
@@ -58,7 +58,7 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
         title='Survival curve',
         x_label='Simulation time step (year)',
         y_label='Number of alive patients',
-        legends=['Standard of Care', 'DMT'],
+        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
         color_codes=['blue', 'green'],
         file_name='figs/survival_curves.png'
     )
@@ -76,18 +76,111 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
         x_label='Survival time (year)',
         y_label='Counts',
         bin_width=1,
-        legends=['Standard of Care', 'DMT'],
+        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
         color_codes=['blue', 'green'],
         transparency=0.5,
         file_name='figs/survival_times.png'
+    )
+
+# def plot_survival_curves_and_histograms_multicohort(multi_cohort_outcomes_soc, multi_cohort_outcomes_dmt):
+#     """ plot the survival curves and the histograms of survival times
+#     :param multi_cohort_outcomes_soc: outcomes of a multi-cohort simulated under mono therapy
+#     :param multi_cohort_outcomes_dmt: outcomes of a multi-cohort simulated under combination therapy
+#     """
+#
+#     # get survival curves of both treatments
+#     sets_of_survival_curves = [
+#         multi_cohort_outcomes_soc.survivalCurves,
+#         multi_cohort_outcomes_dmt.survivalCurves
+#     ]
+#
+#     # graph survival curve
+#     path.plot_sets_of_sample_paths(
+#         sets_of_sample_paths=sets_of_survival_curves,
+#         title='Survival Curves',
+#         x_label='Simulation Time Step (year)',
+#         y_label='Number of Patients Alive',
+#         legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
+#         transparency=0.4,
+#         color_codes=['pink', 'purple'],
+#         figure_size=(6, 5),
+#         file_name='figs/survival_curves_multicohort.png'
+#     )
+#
+#     # histograms of survival times
+#     set_of_survival_times = [
+#         multi_cohort_outcomes_soc.meanSurvivalTimes,
+#         multi_cohort_outcomes_dmt.meanSurvivalTimes
+#     ]
+#
+#     # graph histograms
+#     hist.plot_histograms(
+#         data_sets=set_of_survival_times,
+#         title='Histograms of Mean Survival Time',
+#         x_label='Survival Time (year)',
+#         y_label='Counts',
+#         bin_width=0.5,
+#         x_range=[5, 20],
+#         legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
+#         color_codes=['green', 'blue'],
+#         transparency=0.5,
+#         figure_size=(6, 5),
+#         file_name='figs/survival_times_multicohort.png'
+#     )
+
+
+def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_cohort_outcomes_dmt30):
+    """ plot the survival curves and the histograms of survival times
+    :param multi_cohort_outcomes_mono: outcomes of a multi-cohort simulated under mono therapy
+    :param multi_cohort_outcomes_combo: outcomes of a multi-cohort simulated under combination therapy
+    """
+
+    # get survival curves of both treatments
+    sets_of_survival_curves = [
+        multi_cohort_outcomes_soc.survivalCurves,
+        multi_cohort_outcomes_dmt30.survivalCurves
+    ]
+
+    # graph survival curve
+    path.plot_sets_of_sample_paths(
+        sets_of_sample_paths=sets_of_survival_curves,
+        title='Survival Curves',
+        x_label='Simulation Time Step (year)',
+        y_label='Number of Patients Alive',
+        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
+        transparency=0.4,
+        color_codes=['green', 'blue'],
+        figure_size=(6, 5),
+        file_name='figs/survival_curves_multicohort.png'
+    )
+
+    # histograms of survival times
+    set_of_survival_times = [
+        multi_cohort_outcomes_soc.meanSurvivalTimes,
+        multi_cohort_outcomes_dmt30.meanSurvivalTimes
+    ]
+
+    # graph histograms
+    hist.plot_histograms(
+        data_sets=set_of_survival_times,
+        title='Histograms of Mean Survival Time',
+        x_label='Survival Time (year)',
+        y_label='Counts',
+        bin_width=0.1,
+        x_range=[7,10],
+        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
+        color_codes=['green', 'blue'],
+        transparency=0.5,
+        figure_size=(6, 5),
+        file_name='figs/survival_times_multicohort.png'
     )
 
 
 def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
     """ prints average increase in survival time, discounted cost, and discounted utility
     under combination therapy compared to mono therapy
-    :param sim_outcomes_mono: outcomes of a cohort simulated under mono therapy
-    :param sim_outcomes_combo: outcomes of a cohort simulated under combination therapy
+    :param sim_outcomes_soc: outcomes of a cohort simulated under mono therapy
+    :param sim_outcomes_dmt: outcomes of a cohort simulated under combination therapy
     """
 
     # increase in mean survival time under combination therapy with respect to mono therapy
@@ -129,8 +222,8 @@ def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
 
 def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
     """ performs cost-effectiveness and cost-benefit analyses
-    :param sim_outcomes_mono: outcomes of a cohort simulated under mono therapy
-    :param sim_outcomes_combo: outcomes of a cohort simulated under combination therapy
+    :param sim_outcomes_soc: outcomes of a cohort simulated under mono therapy
+    :param sim_outcomes_dmt: outcomes of a cohort simulated under combination therapy
     """
 
     # define two strategies
