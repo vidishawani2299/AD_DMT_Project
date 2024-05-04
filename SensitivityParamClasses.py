@@ -60,7 +60,7 @@ class ParameterGenerator:
         self.annualSOCCostRVG = rvgs.Gamma(shape=fit_output_soc["shape"], loc=0, scale=fit_output_soc["scale"])
 
         # create beta distributions for annual state utility
-        for utility in data.STATE_DISUTILITY:
+        for utility in data.STATE_UTILITY:
             # if utility is zero, add a constant 0, otherwise add a beta distribution
             if utility == 0:
                 self.StateDisutilityRVGs.append(rvgs.Constant(value=0))

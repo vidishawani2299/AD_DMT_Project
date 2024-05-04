@@ -1,6 +1,7 @@
+
 import deampy.plots.histogram as hist
 import deampy.plots.sample_paths as path
-import deampy.statistics as stat
+
 
 import InputData as D
 from MarkovClasses import Cohort, MultiCohort
@@ -19,18 +20,20 @@ myCohort1.simulate(n_time_steps=D.SIM_TIME_STEPS)
 path.plot_sample_path(
     sample_path=myCohort1.cohortOutcomes.nLivingPatients,
     title='Survival Curve',
+    color='midnightblue',
     x_label='Simulation Year',
     y_label='Number Alive',
-    file_name='figs/survival_curve.png')
+    file_name='figs/dmt/survival_curve.png')
 
 # plot the histogram of survival times
 hist.plot_histogram(
     data=myCohort1.cohortOutcomes.survivalTimes,
     title='Histogram of Patient Survival Time',
+    color='midnightblue',
     x_label='Survival Time (Year)',
     y_label='Count',
     bin_width=1,
-    file_name='figs/histogram.png')
+    file_name='figs/dmt/histogram.png')
 
 print("Expected average survival time:", myCohort1.cohortOutcomes.statSurvivalTimes.get_mean())
 print("95% confidence interval of average survival time:", myCohort1.cohortOutcomes.statSurvivalTimes.get_t_CI(alpha=0.05))
@@ -39,7 +42,7 @@ print("Expected average time to severe state:", myCohort1.cohortOutcomes.statTim
 print("95% confidence interval of average time to severe state:", myCohort1.cohortOutcomes.statTimeToSEVERE.get_t_CI(alpha=0.05))
 
 print("Expected Cost:", myCohort1.cohortOutcomes.statCost.get_mean())
-print("Expected Disutility:", myCohort1.cohortOutcomes.statUtilities.get_mean())
+print("Expected Utility:", myCohort1.cohortOutcomes.statUtilities.get_mean())
 
 # create multiple cohorts
 multiCohort1 = MultiCohort(

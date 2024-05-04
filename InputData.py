@@ -1,31 +1,30 @@
 from enum import Enum
 import numpy as np
-N_COHORTS = 10
-POP_SIZE = 10000         # cohort population size
+
+N_COHORTS = 10         # number of cohorts
+POP_SIZE = 10000       # cohort population size
 SIM_TIME_STEPS = 20    # length of simulation (half years)
-# check cycle length
-ALPHA = 0.05        # significance level for calculating confidence intervals
-DISCOUNT = 0.03     # annual discount rate
-RR_DMT = 0.30
+ALPHA = 0.05           # significance level for calculating confidence intervals
+DISCOUNT = 0.03        # annual discount rate
+RR_DMT = 0.30          # effectiveness of DMT
 
-SEMI_ANNUAL_STATE_COST = [3875, # PREDEM
-                     3875, # MILD
-                     25000, # MODERATE
-                     25000, # SEVERE
-                     0] # ADJ_DEATH
+SEMI_ANNUAL_STATE_COST = [3875,      # PREDEM
+                          3875,      # MILD
+                          25000,     # MODERATE
+                          25000,     # SEVERE
+                          0]         # ADJ_DEATH
 
-STATE_DISUTILITY = [0.83,
-                    0.78,
-                    0.69,
-                    0.27,
-                    0]
+STATE_UTILITY = [0.83,      # PREDEM
+                 0.78,      # MILD
+                 0.69,      # MODERATE
+                 0.27,      # SEVERE
+                 0]         # ADJ_DEATH
 
 DMT30_COST = 56000/2
-# DMT30_COST_year2onwards = 59360/2
 SOC_COST = 2040/2
 
 class HealthStates(Enum):
-    """ health states of patients with HIV """
+    """ health states of patients with AD"""
     PREDEM = 0
     MILD = 1
     MODERATE = 2
@@ -33,53 +32,40 @@ class HealthStates(Enum):
     ADJ_DEATH = 4
 
 TRANS_MATRIX = [
-    [70,  28,    0,   0,   3],   # CD4_200to500
-    [0,     62,    32,    2,    3],   # CD4_200
-    [0,     0,      62,    24,   8],
-    [0,     0,      0,    100,   22],
-    [0,     0,      0,    0,   1]# AIDS
+    [70,  28,    0,   0,   3],            # PREDEM
+    [0,     62,    32,    2,    3],       # MILD
+    [0,     0,      62,    24,   8],      # MODERATE
+    [0,     0,      0,    100,   22],     # SEVERE
+    [0,     0,      0,    0,   1]         # ADJ_DEATH
     ]
 
-
-
-
+# transition probability matrix for standard of care
 def get_trans_prob_matrix(trans_matrix):
     """
     :param trans_matrix: transition matrix containing counts of transitions between states
     :return: transition probability matrix
     """
-
-    # initialize transition probability matrix
-    trans_prob_matrix = []
-
-    # for each row in the transition matrix
+    trans_prob_matrix = [] # initializing matrix
     for row in trans_matrix:
-        # calculate the transition probabilities
-        prob_row = np.array(row)/sum(row)
-        # add this row of transition probabilities to the transition probability matrix
+        prob_row = np.array(row)/sum(row) # for each row, contruct transition probabilities
         trans_prob_matrix.append(prob_row)
 
     return trans_prob_matrix
+
+# printing transition probability matrix for standard of care
 print(get_trans_prob_matrix(TRANS_MATRIX))
 
-
+# transition probability matrix for DMT
 def get_trans_prob_matrix_dmt_30(trans_prob_matrix_soc, relative_risk_dmt):
-    matrix_dmt = []
+    """
+    :param trans_prob_matrix_soc: transition probability matrix for standard of care
+    :param relative_risk_dmt: effectiveness of DMT
+    :return: transition probability matrix adjusted for DMT at predementia stage
+
+    """
+    matrix_dmt = [] # initialize matrix
     for row in trans_prob_matrix_soc:
-        matrix_dmt.append(np.zeros(len(row)))  # adding a row [0, 0, 0, 0]
-
-    # populate the combo matrix
-    # calculate the effect of combo-therapy on non-diagonal elements
-
-    # for s in range(len(matrix_dmt)):  # Iterate through all rows of matrix_dmt
-    #     if s < 3:  # Check if the current row index is less than 3
-    #         for next_s in range(s, len(trans_prob_matrix_soc[s])):
-    #             # Apply the changes only to the first three rows
-    #             matrix_dmt[s][next_s] = trans_prob_matrix_soc[s][next_s] - (
-    #                         relative_risk_dmt * trans_prob_matrix_soc[s][next_s])
-    #     else:
-    #         # For rows 3 and beyond, copy them unchanged from trans_prob_matrix_soc
-    #         matrix_dmt[s] = trans_prob_matrix_soc[s][:]
+        matrix_dmt.append(np.zeros(len(row)))  # for each row, construct transition probabilities
 
     for s in range(len(matrix_dmt)):  # Iterate through all rows of matrix_dmt
         if s < 3:  # Check if the current row index is less than 3
@@ -102,4 +88,5 @@ def get_trans_prob_matrix_dmt_30(trans_prob_matrix_soc, relative_risk_dmt):
 
     return matrix_dmt
 
+# printing transition probability matrix for DMT at predementia stage
 print(get_trans_prob_matrix_dmt_30(get_trans_prob_matrix(TRANS_MATRIX),0.30))

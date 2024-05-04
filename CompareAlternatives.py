@@ -3,7 +3,7 @@ import MarkovClasses as model
 import ParameterClasses as param
 import Support as support
 
-# simulating mono therapy
+# simulating donepezil
 # create a cohort
 cohort_SOC = model.Cohort(id=0,
                            pop_size=data.POP_SIZE,
@@ -11,7 +11,7 @@ cohort_SOC = model.Cohort(id=0,
 # simulate the cohort
 cohort_SOC.simulate(n_time_steps=data.SIM_TIME_STEPS)
 
-# simulating combination therapy
+# simulating dmt
 # create a cohort
 cohort_DMT30 = model.Cohort(id=1,
                             pop_size=data.POP_SIZE,
@@ -19,7 +19,7 @@ cohort_DMT30 = model.Cohort(id=1,
 # simulate the cohort
 cohort_DMT30.simulate(n_time_steps=data.SIM_TIME_STEPS)
 
-# print the estimates for the mean survival time and mean time to AIDS
+# print the estimates for the mean survival time and mean time to severe state
 support.print_outcomes(sim_outcomes=cohort_SOC.cohortOutcomes,
                        therapy_name=param.Therapies.SOC)
 support.print_outcomes(sim_outcomes=cohort_DMT30.cohortOutcomes,

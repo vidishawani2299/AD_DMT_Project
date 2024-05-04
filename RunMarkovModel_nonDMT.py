@@ -18,18 +18,20 @@ myCohort.simulate(n_time_steps=D.SIM_TIME_STEPS)
 path.plot_sample_path(
     sample_path=myCohort.cohortOutcomes.nLivingPatients,
     title='Survival Curve',
+    color='mediumslateblue',
     x_label='Simulation Year',
     y_label='Number Alive',
-    file_name='figs/survival_curve.png')
+    file_name='figs/soc/survival_curve.png')
 
 # plot the histogram of survival times
 hist.plot_histogram(
     data=myCohort.cohortOutcomes.survivalTimes,
     title='Histogram of Patient Survival Time',
+    color='mediumslateblue',
     x_label='Survival Time (Year)',
     y_label='Count',
     bin_width=1,
-    file_name='figs/histogram.png')
+    file_name='figs/soc/histogram.png')
 
 
 print("Expected average survival time:", myCohort.cohortOutcomes.statSurvivalTimes.get_mean())
@@ -39,7 +41,7 @@ print("Expected average time to severe state:", myCohort.cohortOutcomes.statTime
 print("95% confidence interval of average time to severe state:", myCohort.cohortOutcomes.statTimeToSEVERE.get_t_CI(alpha=0.05))
 
 print("Expected Cost:", myCohort.cohortOutcomes.statCost.get_mean())
-print("Expected Disutility:", myCohort.cohortOutcomes.statUtilities.get_mean())
+print("Expected Utility:", myCohort.cohortOutcomes.statUtilities.get_mean())
 
 # create multiple cohorts
 multiCohort = MultiCohort(

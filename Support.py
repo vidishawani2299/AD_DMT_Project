@@ -15,7 +15,7 @@ def print_outcomes(sim_outcomes, therapy_name):
     survival_mean_CI_text = sim_outcomes.statSurvivalTimes.get_formatted_mean_and_interval(
         interval_type='c', alpha=data.ALPHA, deci=2)
 
-    # mean and confidence interval text of time to AIDS
+    # mean and confidence interval text of time to severe state
     time_to_SEVERE_CI_text = sim_outcomes.statTimeToSEVERE.get_formatted_mean_and_interval(
         interval_type='c', alpha=data.ALPHA, deci=2)
 
@@ -31,7 +31,7 @@ def print_outcomes(sim_outcomes, therapy_name):
     print(therapy_name)
     print("  Estimate of mean survival time and {:.{prec}%} confidence interval:".format(1 - data.ALPHA, prec=0),
           survival_mean_CI_text)
-    print("  Estimate of mean time to AIDS and {:.{prec}%} confidence interval:".format(1 - data.ALPHA, prec=0),
+    print("  Estimate of mean time to severe state and {:.{prec}%} confidence interval:".format(1 - data.ALPHA, prec=0),
           time_to_SEVERE_CI_text)
     print("  Estimate of discounted cost and {:.{prec}%} confidence interval:".format(1 - data.ALPHA, prec=0),
           cost_mean_CI_text)
@@ -55,12 +55,12 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
     # plot survival curve
     path.plot_sample_paths(
         sample_paths=survival_curves,
-        title='Survival Curves',
         x_label='Simulation time step (year)',
         y_label='Number of alive patients',
+        figure_size=(6,5),
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumvioletred', 'slateblue'],
-        file_name='figs/survival_curves.png'
+        color_codes=['mediumslateblue', 'midnightblue'],
+        file_name='figs/compare/survival_curves.png'
     )
 
     # histograms of survival times
@@ -72,14 +72,13 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
     # graph histograms
     hist.plot_histograms(
         data_sets=set_of_time_to_severe,
-        title='Histogram of Patient Survival Time',
         x_label='Survival time (year)',
         y_label='Counts',
         bin_width=1,
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumvioletred', 'slateblue'],
+        color_codes=['mediumslateblue', 'midnightblue'],
         transparency=0.5,
-        file_name='figs/survival_times.png'
+        file_name='figs/compare/survival_times.png'
     )
 
     # histogram of time to reach SEVERE state
@@ -91,22 +90,20 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
     # graph histograms
     hist.plot_histograms(
         data_sets=set_of_time_to_severe,
-        title='Histogram of Time to Reach SEVERE state',
         x_label='Survival time (year)',
         y_label='Counts',
         bin_width=1,
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumvioletred', 'slateblue'],
+        color_codes=['mediumslateblue', 'midnightblue'],
         transparency=0.5,
-        file_name='figs/survival_times_severe_state.png'
+        file_name='figs/compare/times_severe_state.png'
     )
-
 
 
 def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_cohort_outcomes_dmt30):
     """ plot the survival curves and the histograms of survival times
-    :param multi_cohort_outcomes_mono: outcomes of a multi-cohort simulated under mono therapy
-    :param multi_cohort_outcomes_combo: outcomes of a multi-cohort simulated under combination therapy
+    :param multi_cohort_outcomes_soc: outcomes of a multi-cohort simulated under mono therapy
+    :param multi_cohort_outcomes_dmt30: outcomes of a multi-cohort simulated under combination therapy
     """
 
     # get survival curves of both treatments
@@ -118,14 +115,13 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
     # graph survival curve
     path.plot_sets_of_sample_paths(
         sets_of_sample_paths=sets_of_survival_curves,
-        title='Survival Curves',
         x_label='Simulation Time Step (year)',
         y_label='Number of Patients Alive',
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
         transparency=0.4,
-        color_codes=['mediumvioletred', 'slateblue'],
+        color_codes=['mediumslateblue', 'midnightblue'],
         figure_size=(6, 5),
-        file_name='figs/survival_curves_multicohort.png'
+        file_name='figs/compare/multicohort/survival_curves_multicohort.png'
     )
 
     # histograms of survival times
@@ -137,16 +133,15 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
     # graph histograms
     hist.plot_histograms(
         data_sets=set_of_time_to_severe,
-        title='Histograms of Mean Survival Time',
         x_label='Survival Time (year)',
         y_label='Counts',
         bin_width=0.1,
         x_range=[5, 15],
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumvioletred', 'slateblue'],
+        color_codes=['mediumslateblue', 'midnightblue'],
         transparency=0.5,
         figure_size=(6, 5),
-        file_name='figs/survival_times_multicohort.png'
+        file_name='figs/compare/multicohort/survival_times_multicohort.png'
     )
 
     # histograms of time to reach severe state
@@ -158,16 +153,15 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
     # graph histograms
     hist.plot_histograms(
         data_sets=set_of_time_to_severe,
-        title='Histograms of Mean Time to Reach SEVERE state',
         x_label='Survival Time (year)',
         y_label='Counts',
         bin_width=0.1,
         x_range=[5, 15],
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumvioletred', 'slateblue'],
+        color_codes=['mediumslateblue', 'midnightblue'],
         transparency=0.5,
         figure_size=(6, 5),
-        file_name='figs/survival_times_multicohort_severe_state.png'
+        file_name='figs/compare/multicohort/times_multicohort_severe_state.png'
     )
 
 
@@ -190,19 +184,19 @@ def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
     print("Increase in mean survival time and {:.{prec}%} confidence interval:"
           .format(1 - data.ALPHA, prec=0),  estimate_CI)
 
-    # increase in mean time to severe under combination therapy with respect to mono therapy
+    # increase in mean time to severe under dmt with respect to donepezil
     increase_time_to_severe = stat.DifferenceStatIndp(
-        name='Increase in mean survival time',
+        name='Increase in mean time to severe state',
         x=sim_outcomes_dmt.timeToSEVERE,
         y_ref=sim_outcomes_soc.timeToSEVERE)
 
     # estimate and CI
     estimate_CI = increase_time_to_severe.get_formatted_mean_and_interval(
         interval_type='c', alpha=data.ALPHA, deci=2)
-    print("Increase in mean survival time and {:.{prec}%} confidence interval:"
+    print("Increase in mean time to severe state and {:.{prec}%} confidence interval:"
           .format(1 - data.ALPHA, prec=0), estimate_CI)
 
-    # increase in mean discounted cost under combination therapy with respect to mono therapy
+    # increase in mean discounted cost under dmt with respect to donepezil
     increase_discounted_cost = stat.DifferenceStatIndp(
         name='Increase in mean discounted cost',
         x=sim_outcomes_dmt.costs,
@@ -214,7 +208,7 @@ def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
     print("Increase in mean discounted cost and {:.{prec}%} confidence interval:"
           .format(1 - data.ALPHA, prec=0), estimate_CI)
 
-    # increase in mean discounted utility under combination therapy with respect to mono therapy
+    # increase in mean discounted utility under dmt with respect to donepezil
     increase_discounted_utility = stat.DifferenceStatIndp(
         name='Increase in mean discounted utility',
         x=sim_outcomes_dmt.utilities,
@@ -238,13 +232,13 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
         name='Standard of Care Therapy',
         cost_obs=sim_outcomes_soc.costs,
         effect_obs=sim_outcomes_soc.utilities,
-        color='green'
+        color='mediumslateblue'
     )
     dmt_therapy_strategy = econ.Strategy(
         name='Combination Therapy',
         cost_obs=sim_outcomes_dmt.costs,
         effect_obs=sim_outcomes_dmt.utilities,
-        color='blue'
+        color='midnightblue'
     )
 
     # do CEA
@@ -260,7 +254,7 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
         x_label='Additional QALYs',
         y_label='Additional Cost',
         interval_type='c',  # to show confidence intervals for cost and effect of each strategy
-        file_name='figs/cea.png'
+        file_name='figs/cea/cea.png'
     )
 
     # report the CE table
@@ -275,7 +269,7 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
     # CBA
     CBA = econ.CBA(
         strategies=[soc_therapy_strategy, dmt_therapy_strategy],
-        wtp_range=[0, 50000],
+        wtp_range=[0, 150000],
         if_paired=False
     )
     # show the net monetary benefit figure
@@ -286,5 +280,5 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
         interval_type='c',
         show_legend=True,
         figure_size=(6, 5),
-        file_name='figs/nmb.png'
+        file_name='figs/cea/nmb.png'
     )
