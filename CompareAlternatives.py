@@ -34,6 +34,10 @@ support.print_comparative_outcomes(sim_outcomes_soc=cohort_SOC.cohortOutcomes,
 support.report_CEA_CBA(sim_outcomes_soc=cohort_SOC.cohortOutcomes,
                        sim_outcomes_dmt=cohort_DMT30.cohortOutcomes)
 
+# graphs
+support.plot_survival_curves_and_histograms(sim_outcomes_soc=cohort_SOC.cohortOutcomes,
+                                            sim_outcomes_dmt=cohort_DMT30.cohortOutcomes)
+
 
 # create multicohort
 multiCohort = model.MultiCohort(

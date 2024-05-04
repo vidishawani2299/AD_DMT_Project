@@ -55,78 +55,52 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
     # plot survival curve
     path.plot_sample_paths(
         sample_paths=survival_curves,
-        title='Survival curve',
+        title='Survival Curves',
         x_label='Simulation time step (year)',
         y_label='Number of alive patients',
-        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
-        color_codes=['blue', 'green'],
+        legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
+        color_codes=['mediumvioletred', 'slateblue'],
         file_name='figs/survival_curves.png'
     )
 
     # histograms of survival times
-    set_of_survival_times = [
+    set_of_time_to_severe = [
         sim_outcomes_soc.survivalTimes,
         sim_outcomes_dmt.survivalTimes
     ]
 
     # graph histograms
     hist.plot_histograms(
-        data_sets=set_of_survival_times,
-        title='Histogram of patient survival time',
+        data_sets=set_of_time_to_severe,
+        title='Histogram of Patient Survival Time',
         x_label='Survival time (year)',
         y_label='Counts',
         bin_width=1,
-        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
-        color_codes=['blue', 'green'],
+        legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
+        color_codes=['mediumvioletred', 'slateblue'],
         transparency=0.5,
         file_name='figs/survival_times.png'
     )
 
-# def plot_survival_curves_and_histograms_multicohort(multi_cohort_outcomes_soc, multi_cohort_outcomes_dmt):
-#     """ plot the survival curves and the histograms of survival times
-#     :param multi_cohort_outcomes_soc: outcomes of a multi-cohort simulated under mono therapy
-#     :param multi_cohort_outcomes_dmt: outcomes of a multi-cohort simulated under combination therapy
-#     """
-#
-#     # get survival curves of both treatments
-#     sets_of_survival_curves = [
-#         multi_cohort_outcomes_soc.survivalCurves,
-#         multi_cohort_outcomes_dmt.survivalCurves
-#     ]
-#
-#     # graph survival curve
-#     path.plot_sets_of_sample_paths(
-#         sets_of_sample_paths=sets_of_survival_curves,
-#         title='Survival Curves',
-#         x_label='Simulation Time Step (year)',
-#         y_label='Number of Patients Alive',
-#         legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
-#         transparency=0.4,
-#         color_codes=['pink', 'purple'],
-#         figure_size=(6, 5),
-#         file_name='figs/survival_curves_multicohort.png'
-#     )
-#
-#     # histograms of survival times
-#     set_of_survival_times = [
-#         multi_cohort_outcomes_soc.meanSurvivalTimes,
-#         multi_cohort_outcomes_dmt.meanSurvivalTimes
-#     ]
-#
-#     # graph histograms
-#     hist.plot_histograms(
-#         data_sets=set_of_survival_times,
-#         title='Histograms of Mean Survival Time',
-#         x_label='Survival Time (year)',
-#         y_label='Counts',
-#         bin_width=0.5,
-#         x_range=[5, 20],
-#         legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
-#         color_codes=['green', 'blue'],
-#         transparency=0.5,
-#         figure_size=(6, 5),
-#         file_name='figs/survival_times_multicohort.png'
-#     )
+    # histogram of time to reach SEVERE state
+    set_of_time_to_severe = [
+        sim_outcomes_soc.timeToSEVERE,
+        sim_outcomes_dmt.timeToSEVERE
+    ]
+
+    # graph histograms
+    hist.plot_histograms(
+        data_sets=set_of_time_to_severe,
+        title='Histogram of Time to Reach SEVERE state',
+        x_label='Survival time (year)',
+        y_label='Counts',
+        bin_width=1,
+        legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
+        color_codes=['mediumvioletred', 'slateblue'],
+        transparency=0.5,
+        file_name='figs/survival_times_severe_state.png'
+    )
+
 
 
 def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_cohort_outcomes_dmt30):
@@ -147,32 +121,53 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
         title='Survival Curves',
         x_label='Simulation Time Step (year)',
         y_label='Number of Patients Alive',
-        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
+        legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
         transparency=0.4,
-        color_codes=['green', 'blue'],
+        color_codes=['mediumvioletred', 'slateblue'],
         figure_size=(6, 5),
         file_name='figs/survival_curves_multicohort.png'
     )
 
     # histograms of survival times
-    set_of_survival_times = [
+    set_of_time_to_severe = [
         multi_cohort_outcomes_soc.meanSurvivalTimes,
         multi_cohort_outcomes_dmt30.meanSurvivalTimes
     ]
 
     # graph histograms
     hist.plot_histograms(
-        data_sets=set_of_survival_times,
+        data_sets=set_of_time_to_severe,
         title='Histograms of Mean Survival Time',
         x_label='Survival Time (year)',
         y_label='Counts',
         bin_width=0.1,
-        x_range=[7,10],
-        legends=['Donepezil at 30% effectiveness', 'Disease Modifying Therapy'],
-        color_codes=['green', 'blue'],
+        x_range=[5, 15],
+        legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
+        color_codes=['mediumvioletred', 'slateblue'],
         transparency=0.5,
         figure_size=(6, 5),
         file_name='figs/survival_times_multicohort.png'
+    )
+
+    # histograms of time to reach severe state
+    set_of_time_to_severe = [
+        multi_cohort_outcomes_soc.meanTimeToSEVERE,
+        multi_cohort_outcomes_dmt30.meanTimeToSEVERE
+    ]
+
+    # graph histograms
+    hist.plot_histograms(
+        data_sets=set_of_time_to_severe,
+        title='Histograms of Mean Time to Reach SEVERE state',
+        x_label='Survival Time (year)',
+        y_label='Counts',
+        bin_width=0.1,
+        x_range=[5, 15],
+        legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
+        color_codes=['mediumvioletred', 'slateblue'],
+        transparency=0.5,
+        figure_size=(6, 5),
+        file_name='figs/survival_times_multicohort_severe_state.png'
     )
 
 
@@ -194,6 +189,18 @@ def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
         interval_type='c', alpha=data.ALPHA, deci=2)
     print("Increase in mean survival time and {:.{prec}%} confidence interval:"
           .format(1 - data.ALPHA, prec=0),  estimate_CI)
+
+    # increase in mean time to severe under combination therapy with respect to mono therapy
+    increase_time_to_severe = stat.DifferenceStatIndp(
+        name='Increase in mean survival time',
+        x=sim_outcomes_dmt.timeToSEVERE,
+        y_ref=sim_outcomes_soc.timeToSEVERE)
+
+    # estimate and CI
+    estimate_CI = increase_time_to_severe.get_formatted_mean_and_interval(
+        interval_type='c', alpha=data.ALPHA, deci=2)
+    print("Increase in mean survival time and {:.{prec}%} confidence interval:"
+          .format(1 - data.ALPHA, prec=0), estimate_CI)
 
     # increase in mean discounted cost under combination therapy with respect to mono therapy
     increase_discounted_cost = stat.DifferenceStatIndp(

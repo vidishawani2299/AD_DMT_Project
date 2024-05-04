@@ -13,7 +13,6 @@ myCohort = Cohort(id=1,
 
 # simulate the cohort over the specified time steps
 myCohort.simulate(n_time_steps=D.SIM_TIME_STEPS)
-myCohort.cohortOutcomes.print_costs()
 
 # plot the sample path (survival curve)
 path.plot_sample_path(
