@@ -59,7 +59,7 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
         y_label='Number of alive patients',
         figure_size=(6,5),
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumslateblue', 'midnightblue'],
+        color_codes=['cornflowerblue', 'midnightblue'],
         file_name='figs/compare/survival_curves.png'
     )
 
@@ -76,7 +76,7 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
         y_label='Counts',
         bin_width=1,
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumslateblue', 'midnightblue'],
+        color_codes=['cornflowerblue', 'midnightblue'],
         transparency=0.5,
         file_name='figs/compare/survival_times.png'
     )
@@ -94,7 +94,7 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
         y_label='Counts',
         bin_width=1,
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumslateblue', 'midnightblue'],
+        color_codes=['cornflowerblue', 'midnightblue'],
         transparency=0.5,
         file_name='figs/compare/times_severe_state.png'
     )
@@ -119,7 +119,7 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
         y_label='Number of Patients Alive',
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
         transparency=0.4,
-        color_codes=['mediumslateblue', 'midnightblue'],
+        color_codes=['cornflowerblue', 'midnightblue'],
         figure_size=(6, 5),
         file_name='figs/compare/multicohort/survival_curves_multicohort.png'
     )
@@ -138,7 +138,7 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
         bin_width=0.1,
         x_range=[5, 15],
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumslateblue', 'midnightblue'],
+        color_codes=['cornflowerblue', 'midnightblue'],
         transparency=0.5,
         figure_size=(6, 5),
         file_name='figs/compare/multicohort/survival_times_multicohort.png'
@@ -158,7 +158,7 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
         bin_width=0.1,
         x_range=[5, 15],
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
-        color_codes=['mediumslateblue', 'midnightblue'],
+        color_codes=['cornflowerblue', 'midnightblue'],
         transparency=0.5,
         figure_size=(6, 5),
         file_name='figs/compare/multicohort/times_multicohort_severe_state.png'
@@ -167,7 +167,7 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
 
 def print_comparative_outcomes(sim_outcomes_soc, sim_outcomes_dmt):
     """ prints average increase in survival time, discounted cost, and discounted utility
-    under combination therapy compared to mono therapy
+    under dmt compared to donepezil
     :param sim_outcomes_soc: outcomes of a cohort simulated under mono therapy
     :param sim_outcomes_dmt: outcomes of a cohort simulated under combination therapy
     """
@@ -229,13 +229,13 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
 
     # define two strategies
     soc_therapy_strategy = econ.Strategy(
-        name='Standard of Care Therapy',
+        name='Donepezil',
         cost_obs=sim_outcomes_soc.costs,
         effect_obs=sim_outcomes_soc.utilities,
-        color='mediumslateblue'
+        color='cornflowerblue'
     )
     dmt_therapy_strategy = econ.Strategy(
-        name='Combination Therapy',
+        name='Disease Modifying Treatment at 30% effectiveness',
         cost_obs=sim_outcomes_dmt.costs,
         effect_obs=sim_outcomes_dmt.utilities,
         color='midnightblue'

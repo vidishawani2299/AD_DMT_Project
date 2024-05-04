@@ -18,7 +18,7 @@ myCohort.simulate(n_time_steps=D.SIM_TIME_STEPS)
 path.plot_sample_path(
     sample_path=myCohort.cohortOutcomes.nLivingPatients,
     title='Survival Curve',
-    color='mediumslateblue',
+    color='cornflowerblue',
     x_label='Simulation Year',
     y_label='Number Alive',
     file_name='figs/soc/survival_curve.png')
@@ -27,7 +27,7 @@ path.plot_sample_path(
 hist.plot_histogram(
     data=myCohort.cohortOutcomes.survivalTimes,
     title='Histogram of Patient Survival Time',
-    color='mediumslateblue',
+    color='cornflowerblue',
     x_label='Survival Time (Year)',
     y_label='Count',
     bin_width=1,
