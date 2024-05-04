@@ -25,7 +25,6 @@ support.print_outcomes(sim_outcomes=cohort_SOC.cohortOutcomes,
 support.print_outcomes(sim_outcomes=cohort_DMT30.cohortOutcomes,
                        therapy_name=param.Therapies.DMT_30)
 
-
 # print comparative outcomes
 support.print_comparative_outcomes(sim_outcomes_soc=cohort_SOC.cohortOutcomes,
                                    sim_outcomes_dmt=cohort_DMT30.cohortOutcomes)
@@ -55,7 +54,6 @@ multiCohort1 = model.MultiCohort(
 # simulating multicohorts
 multiCohort.simulate(n_time_steps=data.SIM_TIME_STEPS)
 multiCohort1.simulate(n_time_steps=data.SIM_TIME_STEPS)
-
 
 # multicohort
 support.plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc = multiCohort.multiCohortOutcomes,
