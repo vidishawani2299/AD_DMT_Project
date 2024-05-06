@@ -90,7 +90,7 @@ def plot_survival_curves_and_histograms(sim_outcomes_soc, sim_outcomes_dmt):
     # graph histograms
     hist.plot_histograms(
         data_sets=set_of_time_to_severe,
-        x_label='Survival time (year)',
+        x_label='Time to Severe (years)',
         y_label='Counts',
         bin_width=1,
         legends=['Donepezil', 'Disease Modifying Treatment at 30% effectiveness'],
@@ -153,7 +153,7 @@ def plot_survival_curves_and_histograms_multi(multi_cohort_outcomes_soc, multi_c
     # graph histograms
     hist.plot_histograms(
         data_sets=set_of_time_to_severe,
-        x_label='Survival Time (year)',
+        x_label='Time to Severe (years)',
         y_label='Counts',
         bin_width=0.1,
         x_range=[5, 15],
@@ -245,7 +245,7 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
     # (the first strategy in the list of strategies is assumed to be the 'Base' strategy)
     CEA = econ.CEA(
         strategies=[soc_therapy_strategy, dmt_therapy_strategy],
-        if_paired=False
+        if_paired=True
     )
 
     # plot cost-effectiveness figure
@@ -270,7 +270,7 @@ def report_CEA_CBA(sim_outcomes_soc, sim_outcomes_dmt):
     CBA = econ.CBA(
         strategies=[soc_therapy_strategy, dmt_therapy_strategy],
         wtp_range=[0, 150000],
-        if_paired=False
+        if_paired=True
     )
     # show the net monetary benefit figure
     CBA.plot_marginal_nmb_lines(

@@ -1,8 +1,6 @@
 import InputData as data
 import numpy as np
 import deampy.random_variates as rvgs
-import scipy.stats as stat
-import math
 from ParameterClasses import Therapies
 from InputData import get_trans_prob_matrix_dmt_30
 
@@ -29,12 +27,12 @@ class ParameterGenerator:
         self.semiannualStateCostRVGs = []  # list of gamma distributions for the annual cost of states
         self.StateDisutilityRVGs = []  # list of beta distributions for the annual utility of states
         self.probMatrixRVG = []  # list of dirichlet distributions for transition probabilities
-        self.annualDMT30CostRVG = None  # gamma distribution for the cost of zidovudine
-        self.annualSOCCostRVG = None  # gamma distribution for the cost of lamivudine
+        self.annualDMT30CostRVG = None  # gamma distribution for the cost of disease modifying therapy
+        self.annualSOCCostRVG = None  # gamma distribution for the cost of Donepezil
 
         # create Dirichlet distributions for transition probabilities
         for row in data.TRANS_MATRIX:
-            # note:  for a Dirichlet distribution all values of the argument 'a' should be non-zero.
+            # For a Dirichlet distribution, all values of the argument 'a' should be non-zero.
             # setting if_ignore_0s to True allows the Dirichlet distribution to take 'a' with zero values.
             self.probMatrixRVG.append(
                 rvgs.Dirichlet(a=row, if_ignore_0s=True))
@@ -83,22 +81,22 @@ class ParameterGenerator:
         # create a parameter set
         param = Parameters(therapy=self.therapy)
         # calculate transition probabilities
-        prob_matrix = []  # probability matrix without background mortality added
+        prob_matrix = []  # empty list of probability matrix created
         # for all health states
         for s in data.HealthStates:
             # if this state is not death
             if s != data.HealthStates.ADJ_DEATH:
-                # sample from the dirichlet distribution to find the transition probabilities between hiv states
+                # sample from the dirichlet distribution to find the transition probabilities between alzheimer's states
                 # fill in the transition probabilities out of this state
                 # gives sample from dritchlet distribution
                 prob_matrix.append(self.probMatrixRVG[s.value].sample(rng))
-        # calculate transition probabilities between hiv states
+        # calculate transition probabilities between alzheimer's states
         if self.therapy == Therapies.SOC:
-            # calculate transition probability matrix for the mono therapy
-            param.probMatrix = data.get_trans_prob_matrix(trans_matrix=prob_matrix) # check if simply need to equate it as prob_matrix
+            # calculate transition probability matrix for the SOC treatment
+            param.probMatrix = data.get_trans_prob_matrix(trans_matrix=prob_matrix)
 
         elif self.therapy == Therapies.DMT_30:
-            # calculate transition probability matrix for the combination therapy
+            # calculate transition probability matrix for DMT
             param.probMatrix = get_trans_prob_matrix_dmt_30(
                 trans_prob_matrix_soc=data.get_trans_prob_matrix(trans_matrix=prob_matrix),
                 relative_risk_dmt=data.RR_DMT)

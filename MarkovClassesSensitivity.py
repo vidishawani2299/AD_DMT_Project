@@ -10,7 +10,7 @@ class MultiCohort:
         """
         :param ids: (list) of ids for cohorts to simulate
         :param pop_sizes: (list) of population sizes of cohorts to simulate
-
+        :param parameters: (list) of key parameter values and therapy to be applied to the cohorts
         """
         self.ids = ids
         self.popSizes = pop_sizes
@@ -45,12 +45,12 @@ class MultiCohortOutcomes:
         self.survivalCurves = []  # list of survival curves from all simulated cohorts
 
         self.meanSurvivalTimes = []  # list of average patient survival time from each simulated cohort
-        self.meanTimeToAIDS = []     # list of average patient time until AIDS from each simulated cohort
+        self.meanTimeToSEVERE = []     # list of average patient time until SEVERE from each simulated cohort
         self.meanCosts = []          # list of average patient cost from each simulated cohort
         self.meanQALYs = []          # list of average patient QALY from each simulated cohort
 
         self.statMeanSurvivalTime = None    # summary statistics of average survival time
-        self.statMeanTimeToAIDS = None      # summary statistics of average time until AIDS
+        self.statMeanTimeToSEVERE = None      # summary statistics of average time until SEVERE
         self.statMeanCost = None            # summary statistics of average cost
         self.statMeanQALY = None            # summary statistics of average QALY
 
@@ -63,8 +63,8 @@ class MultiCohortOutcomes:
 
         # store mean survival time from this cohort
         self.meanSurvivalTimes.append(simulated_cohort.cohortOutcomes.statSurvivalTimes.get_mean())
-        # store mean time to AIDS from this cohort
-        self.meanTimeToAIDS.append(simulated_cohort.cohortOutcomes.statTimeToSEVERE.get_mean())
+        # store mean time to SEVERE from this cohort
+        self.meanTimeToSEVERE.append(simulated_cohort.cohortOutcomes.statTimeToSEVERE.get_mean())
         # store mean cost from this cohort
         self.meanCosts.append(simulated_cohort.cohortOutcomes.statCost.get_mean())
         # store mean QALY from this cohort
@@ -79,8 +79,8 @@ class MultiCohortOutcomes:
         self.statMeanSurvivalTime = stat.SummaryStat(name='Average survival time',
                                                      data=self.meanSurvivalTimes)
         # summary statistics of mean time to AIDS
-        self.statMeanTimeToAIDS = stat.SummaryStat(name='Average time to AIDS',
-                                                   data=self.meanTimeToAIDS)
+        self.statMeanTimeToSEVERE = stat.SummaryStat(name='Average time to AIDS',
+                                                   data=self.meanTimeToSEVERE)
         # summary statistics of mean cost
         self.statMeanCost = stat.SummaryStat(name='Average cost',
                                              data=self.meanCosts)
